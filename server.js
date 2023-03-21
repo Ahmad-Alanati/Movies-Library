@@ -10,9 +10,9 @@ function Movie(movieData){
   this.overview = movieData["overview"]
 }
 
-function ResponseError(str){
-  this.code = str;
-  this.response = str == "500"?"Sorry, something went wrong":"page not found error";
+function ResponseError(obj){
+  this.status = obj.statusCode;
+  this.responseText = this.status == "500"?"Sorry, something went wrong":"page not found error";
 }
 
 app.get('/', serverHandler);
@@ -21,8 +21,8 @@ app.get('*', notFoundHandler);
 app.get('*', serverErrorHandler);
 
 function notFoundHandler(req, res){
-  let stat = new ResponseError("404");
-  res.status(404).json(stat);
+  let stat = new ResponseError(res.status(404));
+  res.send(stat);
 }
 
 function serverErrorHandler(req, res){
