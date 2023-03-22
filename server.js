@@ -26,7 +26,7 @@ app.get('/', serverHandler);
 app.get('/favorite', favoriteHandler);
 app.get('/trending', trendingHandler);
 app.get('/search', searchHandler);
-app.get('/genres', genresHandler);
+app.get('/changes', changesHandler);
 app.get('/discover', discoverHandler);
 app.use('*', notFoundHandler);
 
@@ -75,8 +75,8 @@ function searchHandler(req, res) {
     })
 }
 
-function genresHandler(req, res) {
-  let url = `https://api.themoviedb.org/3/genre/movie/list?api_key=${APIKey}`;
+function changesHandler(req, res) {
+  let url = `https://api.themoviedb.org/3/movie/changes?api_key=${APIKey}`;
   axios.get(url)
     .then(resAPI => {
       let arrOfGenres = resAPI.data.results.map(element => {
