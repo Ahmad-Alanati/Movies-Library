@@ -1,9 +1,9 @@
-# Project Name - Movies-Library
+# Project Name - Movies Library
 
 **Author Name**: ahmad alanati
 
 ## WRRC
-![WRRC](WRRC.png)
+![WRRC](./WRRC/WRRC.png)
 ## Overview
 
 ## Getting Started
@@ -21,3 +21,4 @@
 
 ## reference
 1. [res.status](https://www.geeksforgeeks.org/express-js-res-status-function/)
+2. [the API used](https://www.themoviedb.org/)
