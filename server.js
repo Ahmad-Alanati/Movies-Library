@@ -1,20 +1,28 @@
 'use strict';
 const express = require('express');
+const bodyParser = require('body-parser')
 const cors = require('cors');
 const axios = require('axios');
 require('dotenv').config();
 const movieData = require("./Movie Data/data.json");
+const {Client} = require('pg');
+
+const client = new Client(process.env.dburl);
+
 const app = express();
 app.use(cors());
 const port = process.env.PORT;
 const APIKey = process.env.API_KEY
 
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+
 function Movie(movieData) {
   this.id = movieData["id"];
   this.title = movieData["title"] == null ? movieData["name"] : movieData["title"];
   this.release_Date = movieData["release_date"] == null ? movieData["first_air_date"] : movieData["release_date"];
-  this.poster_Path = movieData["poster_path"];
-  this.overview = movieData["overview"];
+  this.poster_Path = movieData["poster_path"] != null? movieData["poster_path"]:null;
+  this.overview = movieData["overview"] != null? movieData["overview"]:null;
 }
 
 function ResponseError(obj) {
@@ -28,7 +36,10 @@ app.get('/trending', trendingHandler);
 app.get('/search', searchHandler);
 app.get('/changes', changesHandler);
 app.get('/discover', discoverHandler);
+app.get('/getMovies',getMoviesHandler)
+app.post('/addMovie',addMovieHandler)
 app.use('*', notFoundHandler);
+
 
 function notFoundHandler(req, res) {
   let stat = new ResponseError(res.status(404));
@@ -100,9 +111,32 @@ function discoverHandler (req,res){
     })
     .catch(error => {
       res.send(error);
-    })
+    });
 }
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+function addMovieHandler(req,res){
+  let movieObj = new Movie(req.body);
+  let sql = `INSERT INTO movies (movieID, title, releaseDate, posterPath, overview) VALUES($1,$2,$3,$4,$5);`;
+  let values = [movieObj.id,movieObj.title,movieObj.release_Date,movieObj.poster_Path,movieObj.overview];
+  client.query(sql,values).then(
+    res.status(201).send("data has been saved successfully")
+  ).catch(error =>{
+    console.log(error);
+  });
+  
+}
+
+function getMoviesHandler(req,res){
+  let sql = `SELECT * FROM movies;`;
+  client.query(sql).then(result =>{
+    res.send(result.rows);
+  }
+  ).catch(error =>{
+    console.log(error);
+  });
+}
+client.connect().then(()=>{
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
+  })
+}).catch()

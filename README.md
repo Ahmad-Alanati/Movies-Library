@@ -4,6 +4,7 @@
 
 ## WRRC
 ![WRRC](./WRRC/WRRC.png)
+![WRRC2](./WRRC/WRRC2.png)
 ## Overview
 
 ## Getting Started
