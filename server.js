@@ -111,35 +111,32 @@ function discoverHandler (req,res){
     })
     .catch(error => {
       res.send(error);
-    })
+    });
 }
 
 function addMovieHandler(req,res){
   let movieObj = new Movie(req.body);
-  let sql = `INSERT INTO lab13 (movieID, title, releaseDate, posterPath, overview) VALUES($1,$2,$3,$4,$5)`;
+  let sql = `INSERT INTO movies (movieID, title, releaseDate, posterPath, overview) VALUES($1,$2,$3,$4,$5);`;
   let values = [movieObj.id,movieObj.title,movieObj.release_Date,movieObj.poster_Path,movieObj.overview];
   client.query(sql,values).then(
     res.status(201).send("data has been saved successfully")
   ).catch(error =>{
     console.log(error);
-  })
+  });
   
 }
 
 function getMoviesHandler(req,res){
-  let movieObj = new Movie(req.body);
-  let sql = `SELECT * FROM lab13;`;
-  let values = [movieObj.id,movieObj.title,movieObj.release_Date,movieObj.poster_Path,movieObj.overview];
-  client.query(sql,values).then(result =>{
-    console.log(result.rows)
-    res.status(201).send("data has been saved successfully")
+  let sql = `SELECT * FROM movies;`;
+  client.query(sql).then(result =>{
+    res.send(result.rows);
   }
   ).catch(error =>{
     console.log(error);
-  })
+  });
 }
 client.connect().then(()=>{
   app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Example app listening on port ${port}`);
   })
 }).catch()
