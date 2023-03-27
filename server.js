@@ -37,7 +37,10 @@ app.get('/search', searchHandler);
 app.get('/changes', changesHandler);
 app.get('/discover', discoverHandler);
 app.get('/getMovies',getMoviesHandler)
+app.get('/getMovie/:id',getMovieHandler)
 app.post('/addMovie',addMovieHandler)
+app.put('/UPDATE/:id',updateMovieHandler)
+app.delete('/DELETE/:id',deleteMovieHandler)
 app.use('*', notFoundHandler);
 
 
@@ -116,8 +119,8 @@ function discoverHandler (req,res){
 
 function addMovieHandler(req,res){
   let movieObj = new Movie(req.body);
-  let sql = `INSERT INTO movies (movieID, title, releaseDate, posterPath, overview) VALUES($1,$2,$3,$4,$5);`;
-  let values = [movieObj.id,movieObj.title,movieObj.release_Date,movieObj.poster_Path,movieObj.overview];
+  let sql = `INSERT INTO movies (movieID, title, releaseDate, posterPath, overview,personalComments) VALUES($1,$2,$3,$4,$5,$6);`;
+  let values = [movieObj.id,movieObj.title,movieObj.release_Date,movieObj.poster_Path,movieObj.overview,req.body.comment];
   client.query(sql,values).then(
     res.status(201).send("data has been saved successfully")
   ).catch(error =>{
@@ -135,6 +138,42 @@ function getMoviesHandler(req,res){
     console.log(error);
   });
 }
+
+function updateMovieHandler(req,res){
+  let id =parseInt(req.params.id);
+  let comment = req.body.comment;
+  let sql = `UPDATE movies SET personalComments = $1 WHERE  movieID = $2;`;
+  let values= [comment,id];
+  client.query(sql,values).then(
+    res.send(`the data in ${id} movie has been updated`)
+  ).catch(error =>{
+    console.log(error);
+  });
+}
+
+function deleteMovieHandler(req,res){
+  let id =parseInt(req.params.id);
+  let sql = `DELETE FROM movies WHERE movieID=$1;`;
+  let values =[id]
+  client.query(sql,values).then(
+    res.status(204).send(`the data in ${id} movie has been deleted`)
+  ).catch(error =>{
+    console.log(error);
+  });
+}
+
+function getMovieHandler(req,res){
+  let id =parseInt(req.params.id);
+  let sql = `SELECT * FROM movies WHERE movieID=$1;`;
+  let values =[id]
+  client.query(sql,values).then(result =>{
+    res.send(result.rows);
+  }
+  ).catch(error =>{
+    console.log(error);
+  });
+}
+
 client.connect().then(()=>{
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
