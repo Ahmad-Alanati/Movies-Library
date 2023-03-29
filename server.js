@@ -94,7 +94,7 @@ function changesHandler(req, res) {
   axios.get(url)
     .then(resAPI => {
       let arrOfGenres = resAPI.data.results.map(element => {
-        return new Movie(element);
+        return element;
       });
       res.json(arrOfGenres);
     })
