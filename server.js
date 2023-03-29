@@ -20,8 +20,8 @@ app.use(bodyParser.json())
 function Movie(movieData) {
   this.id = movieData["id"];
   this.title = movieData["title"] == null ? movieData["name"] : movieData["title"];
-  this.release_Date = movieData["release_Date"] == null ? movieData["first_air_date"] : movieData["release_Date"];
-  this.poster_Path = movieData["poster_Path"] != null? movieData["poster_Path"]:null;
+  this.release_date = movieData["release_date"] == null ? movieData["first_air_date"] : movieData["release_date"];
+  this.poster_path = movieData["poster_path"] != null? movieData["poster_path"]:null;
   this.overview = movieData["overview"] != null? movieData["overview"]:null;
 }
 
@@ -119,8 +119,8 @@ function discoverHandler (req,res){
 
 function addMovieHandler(req,res){
   let movieObj = new Movie(req.body);
-  let sql = `INSERT INTO movies (id, title, release_Date, poster_Path, overview,comment) VALUES($1,$2,$3,$4,$5,$6);`;
-  let values = [movieObj.id,movieObj.title,movieObj.release_Date,movieObj.poster_Path,movieObj.overview,req.body.comment];
+  let sql = `INSERT INTO movies (id, title, release_date, poster_path, overview,comment) VALUES($1,$2,$3,$4,$5,$6);`;
+  let values = [movieObj.id,movieObj.title,movieObj.release_date,movieObj.poster_path,movieObj.overview,req.body.comment];
   client.query(sql,values).then(
     res.status(201).send("data has been saved successfully")
   ).catch(error =>{
